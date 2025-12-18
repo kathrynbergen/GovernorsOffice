@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    private Camera camera;
+    private Ray ray;
     private InputAction clickAction;
 
     void Awake()
@@ -14,6 +16,11 @@ public class Player : MonoBehaviour
         );
     }
 
+    void Start()
+    {
+        camera = GetComponent<Camera>();
+    }
+    
     void OnEnable()
     {
         clickAction.Enable();
@@ -28,6 +35,16 @@ public class Player : MonoBehaviour
 
     void OnClick(InputAction.CallbackContext context)
     {
-        Debug.Log("clicked");
+        Vector2 mousePosition = Mouse.current.position.ReadValue();
+        ray = camera.ScreenPointToRay(mousePosition);
+        CheckForColliders();
+    }
+
+    private void CheckForColliders()
+    {
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            Debug.Log(hit.collider.gameObject.name + " was clicked");
+        }
     }
 }
