@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
+    public MinigameController MinigameController;
+    
     private Camera camera;
     private Ray ray;
     private InputAction clickAction;
@@ -45,6 +47,10 @@ public class Player : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             Debug.Log(hit.collider.gameObject.name + " was clicked");
+            if (hit.collider.gameObject.tag == "NPC")
+            {
+                MinigameController.StartMinigame();
+            } 
         }
     }
 }
