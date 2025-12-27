@@ -5,64 +5,55 @@ using UnityEngine.UI;
 public class Hexagon : MonoBehaviour
 {
     public HexagonMinigameController HexagonMinigameController;
-    
+
     public SymbolType Symbol;
     public Sprite HexagonNeutralSprite;
     public Sprite HexagonSelectedSprite;
-
     public SpriteRenderer SymbolSprite;
     public Sprite[] SymbolSprites;
 
     public bool isSelected = false;
+    public List<Hexagon> adjacentHexagons = new List<Hexagon>();
 
     private string hexagonName;
     private Image hexagonImage;
-    // store adjacent hexagons in a list of hexagons
-    private List<Hexagon> adjacentHexagons;
-    
-    public void Awake()
+
+    void Awake()
     {
-        adjacentHexagons = new List<Hexagon>(); 
-        Symbol = SymbolType.None;
-        
         HexagonMinigameController = FindObjectOfType<HexagonMinigameController>();
         hexagonImage = GetComponent<Image>();
         hexagonName = gameObject.name;
+        Symbol = SymbolType.None;
     }
 
     public void TryToSelect()
     {
-        if (isAdjacentToEndOfChain()) 
-        {
+        if (IsAdjacentToEndOfChain())
             Select();
-            print("selected successfully");
-        }
         else
-        {
-            print("unable to select - not adjacent to endofchain");
-        }
+            Debug.Log($"Cannot select {hexagonName} - not adjacent to end of chain");
     }
 
-    private bool isAdjacentToEndOfChain()
+    private bool IsAdjacentToEndOfChain()
     {
-        Hexagon endOfChain = HexagonMinigameController.GetEndOfChain();
-        if (endOfChain == null)
-            return false;
-
-        return endOfChain.GetAdjacentHexList().Contains(this);
+        Hexagon end = HexagonMinigameController.GetEndOfChain();
+        if (end == null) return false;
+        return end.adjacentHexagons.Contains(this);
     }
-
 
     public void Select()
     {
         hexagonImage.sprite = HexagonSelectedSprite;
         isSelected = true;
         HexagonMinigameController.AddToHexChain(this);
+        Debug.Log($"Hex {hexagonName} is new end of chain. Neighbors:");
+        foreach (Hexagon h in adjacentHexagons)
+            Debug.Log(h.GetHexName());
     }
 
-    public void TryToDeselect(Hexagon hexagon)
+    public void TryToDeselect(Hexagon hex)
     {
-        if (IsEndOfChain(hexagon)) 
+        if (hex == HexagonMinigameController.GetEndOfChain())
         {
             hexagonImage.sprite = HexagonNeutralSprite;
             isSelected = false;
@@ -70,64 +61,11 @@ public class Hexagon : MonoBehaviour
         }
     }
 
-    public bool IsEndOfChain(Hexagon hexagon)
-    {
-        print("testing isendofchain");
-        if (hexagon.isEqual(HexagonMinigameController.GetEndOfChain()))
-        {
-            print("true");
-            return true;
-        }
-        return false;
-    }
-    public void FindAdjacentHexagons()
-    {
-        adjacentHexagons.Clear();
+    public string GetHexName() => hexagonName;
 
-        float checkRadius = 0.1f; 
-
-        foreach (Vector3 dir in GameParameters.DistancesToAdjacentHexagons)
-        {
-            Vector3 targetPos = transform.position + dir;
-            Debug.DrawLine(transform.position, transform.position + dir, Color.red, 10f);
-
-            // check for colliders at the target position
-            Collider[] hitColliders = Physics.OverlapSphere(targetPos, checkRadius);
-            foreach (Collider hit in hitColliders)
-            {
-                Hexagon hex = hit.GetComponent<Hexagon>();
-                if (hex != null && hex != this)
-                {
-                    adjacentHexagons.Add(hex);
-                    break; // only add the first hex found in this direction
-                }
-            }
-        }
-    }
-
-    public string GetHexName()
-    {
-        return hexagonName;
-    }
-    public List<Hexagon> GetAdjacentHexList()
-    {
-        return adjacentHexagons;
-    }
     public void SetRandomSymbol()
     {
-        Symbol = (SymbolType)Random.Range(1, System.Enum.GetValues(typeof(SymbolType)).Length); // picks one randomly excluding none
-        SetSymbolSprite();
-    }
-
-    private void SetSymbolSprite()
-    {
+        Symbol = (SymbolType)Random.Range(1, System.Enum.GetValues(typeof(SymbolType)).Length);
         SymbolSprite.sprite = SymbolSprites[(int)Symbol];
     }
-
-    private bool isEqual(Hexagon other)
-    {
-        return other != null && other == this;
-    }
-
 }
-

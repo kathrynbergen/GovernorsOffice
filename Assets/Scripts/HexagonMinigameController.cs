@@ -11,6 +11,8 @@ public class HexagonMinigameController : MonoBehaviour
 
     private List<Hexagon> hexagonChain; // to be used to track the chain of selected hexagons
 
+    public Hexagon[] allHexes;
+
     void Awake()
     {
         hexagonChain = new List<Hexagon>();
@@ -19,6 +21,10 @@ public class HexagonMinigameController : MonoBehaviour
             type: InputActionType.Button,
             binding: "<Mouse>/leftButton"
         );
+        if (allHexes == null || allHexes.Length == 0)
+        {
+            allHexes = FindObjectsOfType<Hexagon>();
+        }
     }
 
     void Start()
@@ -71,54 +77,128 @@ public class HexagonMinigameController : MonoBehaviour
 
     public void GameSetup()
     {
-        Hexagon[] hexagons = Object.FindObjectsByType<Hexagon>(
-            FindObjectsInactive.Include,
-            FindObjectsSortMode.None
-        );
-
-        Hexagon startHex = null;
-        
-        foreach (Hexagon hex in hexagons)
+        // Activate all hexes and set random symbols
+        foreach (Hexagon hex in allHexes)
         {
-            
             hex.gameObject.SetActive(true);
-            hex.FindAdjacentHexagons();
             hex.SetRandomSymbol();
-            
-            if (hex.GetHexName()=="Hexagon 0") // temp - sets top left hex to be start always - change to random later (make sure its safe to add from key)
+        }
+
+        // Assign neighbors manually
+        SetupManualNeighbors();
+
+        // Pick starting hex
+        Hexagon startHex = null;
+        foreach (Hexagon hex in allHexes)
+        {
+            if (hex.GetHexName() == "Hexagon 0") 
             {
                 startHex = hex;
+                break;
             }
         }
+
         if (startHex != null)
-        {
             startHex.Select();
-            AddToHexChain(startHex);
+    }
+    private void SetupManualNeighbors()
+{
+    // organize hexes into rows
+    List<List<Hexagon>> hexRows = new List<List<Hexagon>>();
+
+    // even rows 7, odd rows 6
+    int index = 0;
+    int[] rowLengths = new int[] {7,6,7,6,7,6,7}; 
+    foreach (int length in rowLengths)
+    {
+        List<Hexagon> row = new List<Hexagon>();
+        for (int i = 0; i < length; i++)
+        {
+            row.Add(GetHexByName("Hexagon " + index));
+            index++;
         }
-        // create NxN grid where N = level + 4
-        // activate hexagons that are on the grid based on N
-        
-        // create a puzzle solution based on the "safe" tiles
-        
-        
+        hexRows.Add(row);
+    }
+
+    // assign neighbors for each hex
+    for (int r = 0; r < hexRows.Count; r++)
+    {
+        bool isEvenRow = (r % 2 == 0);
+        List<Hexagon> row = hexRows[r];
+
+        for (int c = 0; c < row.Count; c++)
+        {
+            Hexagon hex = row[c];
+            List<Hexagon> neighbors = new List<Hexagon>();
+
+            // Same row neighbors
+            if (c > 0) neighbors.Add(row[c - 1]); // left
+            if (c < row.Count - 1) neighbors.Add(row[c + 1]); // right
+
+            // Upper row neighbors
+            if (r > 0)
+            {
+                List<Hexagon> upperRow = hexRows[r - 1];
+                if (isEvenRow)
+                {
+                    if (c - 1 >= 0 && c - 1 < upperRow.Count) neighbors.Add(upperRow[c - 1]);
+                    if (c < upperRow.Count) neighbors.Add(upperRow[c]);
+                }
+                else
+                {
+                    if (c < upperRow.Count) neighbors.Add(upperRow[c]);
+                    if (c + 1 < upperRow.Count) neighbors.Add(upperRow[c + 1]);
+                }
+            }
+
+            // Lower row neighbors
+            if (r < hexRows.Count - 1)
+            {
+                List<Hexagon> lowerRow = hexRows[r + 1];
+                if (isEvenRow)
+                {
+                    if (c - 1 >= 0 && c - 1 < lowerRow.Count) neighbors.Add(lowerRow[c - 1]);
+                    if (c < lowerRow.Count) neighbors.Add(lowerRow[c]);
+                }
+                else
+                {
+                    if (c < lowerRow.Count) neighbors.Add(lowerRow[c]);
+                    if (c + 1 < lowerRow.Count) neighbors.Add(lowerRow[c + 1]);
+                }
+            }
+
+            hex.adjacentHexagons = neighbors;
+        }
+    }
+}
+
+    private Hexagon GetHexByName(string name)
+    {
+        foreach (Hexagon hex in allHexes)
+        {
+            if (hex.GetHexName() == name)
+                return hex;
+        }
+        Debug.LogWarning($"Hex {name} not found!");
+        return null;
     }
 
     public Hexagon GetEndOfChain()
     {
+        if (hexagonChain.Count == 0) return null;
         return hexagonChain[hexagonChain.Count - 1];
     }
 
     public void AddToHexChain(Hexagon endHexagon)
     {
         hexagonChain.Add(endHexagon);
-        print(hexagonChain);
     }
 
     public void RemoveFromEndOfHexChain(Hexagon endHexagon)
     {
-        if(hexagonChain.Count > 1)
+        if(hexagonChain.Count > 1) // do not let remove start of chain
             hexagonChain.Remove(endHexagon);
-        print(hexagonChain);
     }
+
     
 }

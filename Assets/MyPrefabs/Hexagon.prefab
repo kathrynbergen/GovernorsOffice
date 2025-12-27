@@ -185,9 +185,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6532c257a9776b4797b0b203162a9ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hexagon
+  HexController: {fileID: 0}
   Symbol: 0
   HexagonNeutralSprite: {fileID: 21300000, guid: 6119885ebb2fc374e92262fe29a108fb, type: 3}
   HexagonSelectedSprite: {fileID: 21300000, guid: e06633d3782adef4aba00aacd8638e52, type: 3}
+  hexImage: {fileID: 8302349013353600242}
   SymbolSprite: {fileID: 3845261191659338855}
   SymbolSprites:
   - {fileID: 21300000, guid: 1d1968e500ac2ed47a84004b6961e371, type: 3}
@@ -195,6 +197,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 99c8061508873194bb63dbfafd79f3f0, type: 3}
   - {fileID: 21300000, guid: 063cefbb912b278488b6ac452ee19cd2, type: 3}
   isSelected: 0
+  GridPosition: {x: 0, y: 0}
 --- !u!65 &8175916232414683275
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -256,10 +259,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 10.267956
-  m_Height: 74.977715
+  m_Radius: 28.72
+  m_Height: 90.53
   m_Direction: 1
-  m_Center: {x: 27, y: -0.5588616, z: 0}
+  m_Center: {x: 45.283, y: 0.0491, z: -0.1693}
 --- !u!136 &3405356743057970022
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -279,10 +282,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 10.267956
-  m_Height: 76.779945
+  m_Radius: 28.913
+  m_Height: 95.291
   m_Direction: 1
-  m_Center: {x: -27, y: -1.2230574, z: 0}
+  m_Center: {x: -45.64, y: 0.3168, z: 0}
 --- !u!136 &6372080815416661506
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -302,10 +305,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 12.592345
-  m_Height: 58.736046
+  m_Radius: 30.448
+  m_Height: 88.395
   m_Direction: 0
-  m_Center: {x: 0.46923754, y: 34.372272, z: 0}
+  m_Center: {x: 2.511, y: 34.372272, z: -17.855}
 --- !u!136 &7211520432301916245
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -325,7 +328,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 12.592345
-  m_Height: 58.736046
+  m_Radius: 26.0098
+  m_Height: 86.136
   m_Direction: 0
-  m_Center: {x: 0.46923754, y: -34.02, z: 0}
+  m_Center: {x: -0.0911, y: -47.43, z: 0}
