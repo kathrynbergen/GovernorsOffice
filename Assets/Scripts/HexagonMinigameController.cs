@@ -99,7 +99,11 @@ public class HexagonMinigameController : MonoBehaviour
         }
 
         if (startHex != null)
-            startHex.Select();
+        {
+            startHex.HexagonImage.sprite = startHex.HexagonSelectedDirectionalSprites[(int)HexagonDirectionType.Blank];
+            startHex.isSelected = true;
+            AddToHexChain(startHex);
+        }
     }
     private void SetupManualNeighbors()
 {

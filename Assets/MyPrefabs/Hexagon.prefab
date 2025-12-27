@@ -185,11 +185,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6532c257a9776b4797b0b203162a9ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Hexagon
-  HexController: {fileID: 0}
+  HexagonMinigameController: {fileID: 0}
   Symbol: 0
   HexagonNeutralSprite: {fileID: 21300000, guid: 6119885ebb2fc374e92262fe29a108fb, type: 3}
-  HexagonSelectedSprite: {fileID: 21300000, guid: e06633d3782adef4aba00aacd8638e52, type: 3}
-  hexImage: {fileID: 8302349013353600242}
+  HexagonSelectedDirectionalSprites:
+  - {fileID: 21300000, guid: eb7cbb2f6f31008418ea2ed842120d9b, type: 3}
+  - {fileID: 21300000, guid: ac317bf46f9b8c644b532e3bcdaa2386, type: 3}
+  - {fileID: 21300000, guid: b93bcac3b70d2e4478a40f4712212098, type: 3}
+  - {fileID: 21300000, guid: eb2d05950291ee644bb3cf188e804e2a, type: 3}
+  - {fileID: 21300000, guid: 8a41eb19040fa8d44a1520cb665f1aaa, type: 3}
+  - {fileID: 21300000, guid: b2eb089f1ae3e4f4bb927a6cbd4b8a30, type: 3}
+  - {fileID: 21300000, guid: 1aebf2662b70ac248914a04429d38753, type: 3}
+  - {fileID: 21300000, guid: 4c43cf3f8fab553488ae94f182384c78, type: 3}
+  - {fileID: 21300000, guid: 40b0a83566d4daf4c8131c08551656e8, type: 3}
   SymbolSprite: {fileID: 3845261191659338855}
   SymbolSprites:
   - {fileID: 21300000, guid: 1d1968e500ac2ed47a84004b6961e371, type: 3}
@@ -197,7 +205,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 99c8061508873194bb63dbfafd79f3f0, type: 3}
   - {fileID: 21300000, guid: 063cefbb912b278488b6ac452ee19cd2, type: 3}
   isSelected: 0
-  GridPosition: {x: 0, y: 0}
+  adjacentHexagons: []
+  HexNumber: 0
+  HexagonImage: {fileID: 0}
 --- !u!65 &8175916232414683275
 BoxCollider:
   m_ObjectHideFlags: 0
