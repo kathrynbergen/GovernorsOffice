@@ -33,8 +33,22 @@ public class Hexagon : MonoBehaviour
         }
     }
 
+    public void ResetHex()
+    {
+        Symbol = SymbolType.None;
+        SymbolSprite.sprite = SymbolSprites[(int)Symbol];
+        HexagonImage.sprite = HexagonNeutralSprite;
+        isSelected = false;
+    }
+
     public void TryToSelect()
     {
+        if (!HexagonMinigameController.AllowedSymbols.Contains(Symbol))
+        {
+            print("you clicked an unsafe symbol! resetting game...");
+            HexagonMinigameController.Reset();
+            return;
+        }
         if (IsAdjacentToEndOfChain())
             Select();
         else

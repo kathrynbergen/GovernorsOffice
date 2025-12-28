@@ -1,17 +1,22 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class HexagonMinigameController : MonoBehaviour
 {
+    public Hexagon[] AllHexes;
+    public List<SymbolType> AllowedSymbols;
+    
     private Camera camera;
     private Ray ray;
     private InputAction clickAction;
 
     private List<Hexagon> hexagonChain; // to be used to track the chain of selected hexagons
 
-    public Hexagon[] allHexes;
+    private int numberOfSafeSymbols = 2;
+    
 
     void Awake()
     {
@@ -21,16 +26,16 @@ public class HexagonMinigameController : MonoBehaviour
             type: InputActionType.Button,
             binding: "<Mouse>/leftButton"
         );
-        if (allHexes == null || allHexes.Length == 0)
+        if (AllHexes == null || AllHexes.Length == 0)
         {
-            allHexes = FindObjectsOfType<Hexagon>();
+            AllHexes = FindObjectsOfType<Hexagon>();
         }
     }
 
     void Start()
     {
         camera = Camera.main;
-        GameSetup(); // temp for testing- method will be called from MinigameController eventually
+        GameSetup(); // temp for testing
     }
     
     void OnEnable()
@@ -52,6 +57,20 @@ public class HexagonMinigameController : MonoBehaviour
         CheckForColliders();
     }
 
+    public void Reset()
+    {
+        if (hexagonChain != null)
+        {
+            foreach (Hexagon hex in hexagonChain)
+            {
+                hex.ResetHex();
+                
+            }
+            hexagonChain.Clear();
+        }
+        GameSetup();
+    }
+
     private void CheckForColliders()
     {
         if (Physics.Raycast(ray, out RaycastHit hit))
@@ -63,7 +82,6 @@ public class HexagonMinigameController : MonoBehaviour
                 {
                     if (hexagon.isSelected)
                     {
-                        print("trytodeselect");
                         hexagon.TryToDeselect(hexagon);
                     }
                     else
@@ -74,11 +92,12 @@ public class HexagonMinigameController : MonoBehaviour
             } 
         }
     }
+    
 
-    public void GameSetup()
+    private void GameSetup()
     {
         // Activate all hexes and set random symbols
-        foreach (Hexagon hex in allHexes)
+        foreach (Hexagon hex in AllHexes)
         {
             hex.gameObject.SetActive(true);
             hex.SetRandomSymbol();
@@ -89,7 +108,7 @@ public class HexagonMinigameController : MonoBehaviour
 
         // Pick starting hex
         Hexagon startHex = null;
-        foreach (Hexagon hex in allHexes)
+        foreach (Hexagon hex in AllHexes)
         {
             if (hex.GetHexName() == "Hexagon 0") 
             {
@@ -104,7 +123,23 @@ public class HexagonMinigameController : MonoBehaviour
             startHex.isSelected = true;
             AddToHexChain(startHex);
         }
+
+        PickSafeSymbols();
     }
+
+    private void PickSafeSymbols()
+    {
+        while (AllowedSymbols.Count < numberOfSafeSymbols) // loops until numberOfSafeSymbols symbols are picked
+        {
+            SymbolType randomSymbol = (SymbolType)Random.Range(1, System.Enum.GetValues(typeof(SymbolType)).Length);
+            if (!AllowedSymbols.Contains(randomSymbol))
+            {
+                AllowedSymbols.Add(randomSymbol);
+                print(randomSymbol+ " added");
+            }
+        }
+    }
+
     private void SetupManualNeighbors()
 {
     // organize hexes into rows
@@ -176,14 +211,14 @@ public class HexagonMinigameController : MonoBehaviour
     }
 }
 
-    private Hexagon GetHexByName(string name)
+    private Hexagon GetHexByName(string hexName)
     {
-        foreach (Hexagon hex in allHexes)
+        foreach (Hexagon hex in AllHexes)
         {
-            if (hex.GetHexName() == name)
+            if (hex.GetHexName() == hexName)
                 return hex;
         }
-        Debug.LogWarning($"Hex {name} not found!");
+        Debug.LogWarning($"Hex {hexName} not found!");
         return null;
     }
 
@@ -196,6 +231,10 @@ public class HexagonMinigameController : MonoBehaviour
     public void AddToHexChain(Hexagon endHexagon)
     {
         hexagonChain.Add(endHexagon);
+        if (endHexagon.name == "Hexagon 45")
+        {
+            GameWin();
+        }
     }
 
     public void RemoveFromEndOfHexChain(Hexagon endHexagon)
@@ -204,5 +243,9 @@ public class HexagonMinigameController : MonoBehaviour
             hexagonChain.Remove(endHexagon);
     }
 
+    private void GameWin()
+    {
+        print("you win!");
+    }
     
 }
